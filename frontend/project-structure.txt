@@ -1,0 +1,48 @@
+
+chatbot-app/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   │   ├── chat/
+│   │   │   ├── ChatMessage.vue
+│   │   │   ├── ChatInput.vue
+│   │   │   └── ChatContainer.vue
+│   │   └── shared/
+│   ├── composables/
+│   │   └── useChat.ts
+│   ├── stores/
+│   │   └── chat.ts
+│   ├── types/
+│   │   └── chat.ts
+│   ├── services/
+│   │   └── api.ts
+│   └── views/
+│       └── ChatView.vue
+├── .env
+└── package.json
+
+
+Key features to implement:
+
+Markdown support for messages
+Code syntax highlighting
+Message history persistence
+User authentication
+Responsive design
+Error handling
+Loading states
+Message reactions
+File attachments
+Code execution (optional)
+
+
+The application can be extended with:
+
+WebSocket integration for real-time updates
+Local storage for message history
+Multiple chat contexts/conversations
+Custom themes
+Keyboard shortcuts
+Export chat functionality
+Message search
+User preferences

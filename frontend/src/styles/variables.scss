@@ -1,0 +1,7 @@
+:root {
+  --color-primary: v-bind('theme.colors.primary');
+  --color-background: v-bind('theme.colors.background');
+  --color-text: v-bind('theme.colors.text');
+  --color-secondary: v-bind('theme.colors.secondary');
+  --color-accent: v-bind('theme.colors.accent');
+}

@@ -1,0 +1,28 @@
+nssm install FastAPI_Chatbot "C:\Users\Aliakbar\AppData\Local\Programs\Python\Python310\Scripts\uvicorn.exe" main:app --host 0.0.0.0 --port 8072 --workers 4
+
+
+
+
+nssm start FastAPI_Chatbot
+nssm restart FastAPI_Chatbot
+
+nssm edit FastAPI_Chatbot
+
+
+
+Further Customization Options:
+Add code syntax highlighting using Highlight.js
+
+Implement message persistence with localStorage
+
+Add model selection dropdown
+
+Implement conversation history
+
+Add user avatars
+
+Implement typing indicators
+
+Add support for file attachments
+
+Implement dark mode

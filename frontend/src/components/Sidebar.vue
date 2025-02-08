@@ -7,13 +7,13 @@
     <nav class="sidebar-nav">
       <ul>
         <li>
-          <router-link to="/" class="nav-item">
+          <router-link to="/chat" class="nav-item">
             <span class="icon">🏠</span>
             <span class="label" v-show="!isCollapsed">Home</span>
           </router-link>
         </li>
         <li>
-          <router-link to="/chat" class="nav-item">
+          <router-link to="/conversations" class="nav-item">
             <span class="icon">💬</span>
             <span class="label" v-show="!isCollapsed">Chat</span>
           </router-link>

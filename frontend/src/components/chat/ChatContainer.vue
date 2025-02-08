@@ -1,5 +1,5 @@
 <template>
-  <div class="chat-container" ref="containerRef">
+  <div v-if="messages.length > 0" class="chat-container" ref="containerRef">
     <div v-for="message in messages" :key="message.id" class="message-wrapper">
       <div :class="['message', message.role]">
         <StreamingMessage

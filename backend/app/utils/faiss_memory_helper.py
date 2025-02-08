@@ -51,6 +51,6 @@ class FaissMemoryHelper:
         """"Returns all conversation IDs with their titles."""
         return get_all_conversations()
 
-    def set_title(self, conversation_id: str, title: str):
+    def set_conversation_title(self, conversation_id: str, title: str):
         """Set or update the conversation title."""
         set_conversation_title(conversation_id, title)

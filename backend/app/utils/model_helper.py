@@ -1,6 +1,6 @@
 # Define models and their keywords
 MODEL_ROUTES = {
-    "llama3": {
+    "llama3:latest": {
         "keywords": [
             "ai",
             "machine learning",

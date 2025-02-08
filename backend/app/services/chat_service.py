@@ -48,6 +48,9 @@ class ChatService:
         """Returns the conversation with the given ID."""
         return self.memory.get_conversation(conversation_id)
         
+    def set_conversation_title(self, conversation_id: str, title: str):
+        """Set or update the conversation title."""
+        self.memory.set_conversation_title(conversation_id, title)
         
         
 

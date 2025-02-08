@@ -24,7 +24,15 @@ export const useChatStore = defineStore("chat", {
       this.currentModel = model;
     },
     
-    async streamMessage(content: string) {
+    clearMessages() {
+      console.log("clearMessages");
+      this.messages = [];
+    },
+
+    setMessages(messages: Message[]) {
+      this.messages = messages;
+    },
+    async streamMessage(content: string, conversationId?: string | undefined) {
       this.isStreaming = true;
       const streamService = new StreamService();
 
@@ -43,7 +51,8 @@ export const useChatStore = defineStore("chat", {
           },
           body: JSON.stringify({ 
             prompt: content,
-            model: this.currentModel 
+            model: this.currentModel,
+            conversation_id: conversationId,
           }),
         });
         console.log(response);

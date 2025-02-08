@@ -1,0 +1,57 @@
+# Byte-compiled / cached files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+env/
+.venv/
+
+# VSCode settings
+.vscode/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# Logs and debug files
+*.log
+debug.log
+
+# Unit test and coverage reports
+.coverage
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# MyPy type checker cache
+.mypy_cache/
+
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+
+# SQLite database files
+*.sqlite3
+*.db
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.env
+
+# Docker files
+*.dockerfile
+docker-compose.override.yml

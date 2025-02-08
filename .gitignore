@@ -1,3 +1,4 @@
-backend/app/logs/
-backend/chatbot.db
-document/
+/backend/app/logs/
+*.log
+*.db
+/document/

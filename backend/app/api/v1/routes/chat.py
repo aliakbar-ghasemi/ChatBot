@@ -5,6 +5,7 @@ from app.core.dependencies import validate_model
 from app.models.chat_model import ChatRequest
 from app.utils.model_helper import select_model
 from app.core.logger import logger
+import datetime
 
 router = APIRouter()
 
@@ -19,6 +20,9 @@ async def chat(request: ChatRequest):
         model = request.model
     else:
         model = select_model(request.prompt)  # Select the correct model
+        
+    if not request.conversation_id or request.conversation_id.strip() == "":
+        request.conversation_id = str(int(datetime.datetime.now().timestamp()))
 
     # Validate the model
     if not validate_model(model):

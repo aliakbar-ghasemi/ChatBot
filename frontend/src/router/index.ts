@@ -4,9 +4,14 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
+      path: '/chat/:id?',
       name: 'home',
       component: () => import('../views/ChatView.vue'),
+    },
+    {
+      path: '/conversations',
+      name: 'conversations',
+      component: () => import('../views/ConversationsView.vue'),
     },
     
   ],

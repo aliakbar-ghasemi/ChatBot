@@ -4,7 +4,7 @@ class Settings(BaseSettings):
     APP_NAME: str = "Chat API"
     API_VERSION: str = "v1"
     HOST: str = "127.0.0.1"
-    PORT: int = 8062
+    PORT: int = 8072
     DEBUG: bool = True
 
     # Ollama Model Configuration

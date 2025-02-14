@@ -22,7 +22,7 @@ const isSidebarCollapsed = ref(false)
 .app-container {
   display: flex;
   flex-direction: row;
-  background: #f8f9fa;
+  
 }
 
 .main-content {
@@ -33,6 +33,11 @@ const isSidebarCollapsed = ref(false)
   height: 100vh;
   padding: 1rem;
   transition: all 0.3s ease;
+  background: #f8f9fa;
+}
+
+body{
+  background: #f8f9fa;
 }
 
 .main-content.sidebar-collapsed {

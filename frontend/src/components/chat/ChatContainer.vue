@@ -57,12 +57,12 @@ const scrollToBottom = () => {
 }
 
 .message {
-  max-width: 80%;
   padding: 1rem;
   border-radius: 8px;
 }
 
 .message.user {
+  max-width: 80%;
   margin-left: auto;
   background-color: #6366f1;
   color: white;

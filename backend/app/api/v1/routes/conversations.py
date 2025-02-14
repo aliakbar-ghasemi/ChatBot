@@ -10,7 +10,7 @@ async def get_all_conversations():
 
 @router.get("/{conversation_id}")
 async def get_chat_history(conversation_id: str):
-    return ChatService().get_conversation(conversation_id)
+    return ChatService().get_conversation_messages(conversation_id)
 
 @router.post("/{conversation_id}/update_title/")
 async def update_title(conversation_id: str, title: str):

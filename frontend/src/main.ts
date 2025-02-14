@@ -1,3 +1,4 @@
+import './assets/fonts/font.css'
 import './assets/main.css'
 
 import { createApp } from 'vue'
@@ -6,6 +7,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
 import { themePlugin } from './plugins/theme';
+
 
 const app = createApp(App)
 

@@ -9,13 +9,13 @@
         <li>
           <router-link to="/chat" class="nav-item">
             <span class="icon">🏠</span>
-            <span class="label" v-show="!isCollapsed">Home</span>
+            <span class="label" v-show="!isCollapsed">New Chat</span>
           </router-link>
         </li>
         <li>
           <router-link to="/conversations" class="nav-item">
             <span class="icon">💬</span>
-            <span class="label" v-show="!isCollapsed">Chat</span>
+            <span class="label" v-show="!isCollapsed">Conversations</span>
           </router-link>
         </li>
         <li>

@@ -2,3 +2,7 @@
 *.log
 *.db
 /document/
+backend/downlad.py
+backend/faiss_index_ids.npy
+backend/faiss_index.bin
+/frontend/src/assets/fonts

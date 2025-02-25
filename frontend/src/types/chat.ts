@@ -3,6 +3,7 @@ export interface Message {
   content: string
   role: 'user' | 'assistant'
   timestamp: Date
+  model: string | null
 }
 
 export interface Model {

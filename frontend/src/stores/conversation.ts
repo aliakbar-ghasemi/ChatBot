@@ -35,6 +35,7 @@ export const useConversationStore = defineStore("conversation", {
             content: message.message,
             role: message.role,
             timestamp: message.timestamp,
+            model: message.model,
           }));
           chatStore.setMessages(messages);
           //this.conversations = data;

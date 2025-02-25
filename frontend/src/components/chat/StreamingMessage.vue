@@ -1,22 +1,23 @@
 <template>
   <div class="streaming-message" :class="{ 'is-streaming': isStreaming }">
     <div class="response-container">
-      <div v-html="formattedResponse" dir="auto"></div>
+      <div dir="auto">
+      <MarkdownRenderer :content="props.content" />
+      </div>
       <span v-if="isStreaming" class="cursor">▋</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { marked } from "marked";
-import { computed } from "vue";
+import MarkdownRenderer from "@/components/MarkdownRenderer.vue";
 
 const props = defineProps<{
   content: string;
   isStreaming: boolean;
 }>();
 
-const formattedResponse = computed(() => marked.parse(props.content || ""));
+
 </script>
 
 <style scoped>

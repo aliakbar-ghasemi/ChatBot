@@ -34,7 +34,7 @@ class FaissMemoryHelper:
         self._save_index()  # Save FAISS index and message IDs
         print(f"Added message {message_id} to FAISS index.")
 
-    def search_similar_messages(self, query_vector, top_k=5):
+    def search_similar_messages(self, query_vector, top_k=2):
         """Find top K similar messages using FAISS HNSW."""
         query_vector = query_vector.reshape(1, -1)  # Ensure 2D
         

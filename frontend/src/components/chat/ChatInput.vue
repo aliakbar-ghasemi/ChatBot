@@ -1,13 +1,13 @@
 <template>
   <div class="chat-input-container">
-    <div v-if="!hasMessages" style="text-align: center; margin-bottom: 1rem;">
+    <div v-if="!hasMessages" style="text-align: center; margin-bottom: 1rem">
       <h1>What can I help with?</h1>
     </div>
     <div class="input-wrapper">
       <textarea
         ref="textareaRef"
         v-model="localInput"
-        class="chat-textarea"
+        class="auto-grow-textarea"
         :rows="textareaRows"
         placeholder="Send a message..."
         @keydown.enter.prevent="handleEnter"
@@ -17,7 +17,7 @@
       <div class="actions-bar">
         <div class="left-actions">
           <button class="action-btn" @click="toggleFileUpload">
-            <i class="fas fa-paperclip"></i>
+            <i class="fa fa-paperclip"></i>
           </button>
           <input
             type="file"
@@ -31,7 +31,7 @@
         <div class="right-actions">
           <span v-if="isTyping" class="typing-indicator"> Typing... </span>
           <button class="send-button" :disabled="!canSend" @click="sendMessage">
-            <i class="fas fa-paper-plane" :class="{ rotating: loading }"></i>
+            <i class="fa fa-paper-plane" :class="{ rotating: loading }"></i>
           </button>
         </div>
       </div>
@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 
 const props = defineProps<{
@@ -71,8 +71,7 @@ const localInput = ref(props.modelValue);
 
 const canSend = computed(() => {
   return (
-    (localInput.value.trim().length > 0 || attachments.value.length > 0) &&
-    !props.loading
+    (localInput.value.trim().length > 0 || attachments.value.length > 0) && !props.loading
   );
 });
 
@@ -98,14 +97,16 @@ const debouncedResetTyping = useDebounceFn(() => {
   isTyping.value = false;
 }, 1000);
 
+onMounted(() => {
+  autoResize();
+});
 //Auto-resize textarea
 const autoResize = () => {
   const textarea = textareaRef.value;
-  if (!textarea) return;
-
-  textarea.style.height = "auto";
-  textarea.style.height = `${textarea.scrollHeight}px`;
-  textareaRows.value = Math.min(Math.ceil(textarea.scrollHeight / 24), 5);
+  if (textarea) {
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }
 };
 
 const handleEnter = (e: KeyboardEvent) => {
@@ -144,34 +145,40 @@ const removeAttachment = (index: number) => {
 
 <style scoped>
 .chat-input-container {
-  border-top: 1px solid #e5e7eb;
-  padding: 1rem;
-  background: #fff;
-  border-radius: 20px 20px 20px 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   justify-content: center;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-bottom: 0.6rem;
 }
 
 .input-wrapper {
-  max-width: 768px;
+  width: 100%;
   margin: 0 auto;
   padding-top: 1rem;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  border-radius: 20px 20px 20px 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
 }
 
-.chat-textarea {
+.auto-grow-textarea {
   width: 100%;
-  resize: none;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 1rem;
+  min-height: 70px;
+  max-height: 300px; /* Optional limit */
+  /*overflow-y: hidden; /* Hide scrollbar */
+  resize: none; /* Prevent manual resizing */
+  border: none;
+  font-size: 1.2rem;
   line-height: 1.5;
-  outline: none;
+  align-items: center;
   transition: border-color 0.2s;
 }
 
-.chat-textarea:focus {
-  border-color: #6366f1;
+.auto-grow-textarea:focus {
+  border: none;
+  outline: none;
 }
 
 .actions-bar {
@@ -182,27 +189,44 @@ const removeAttachment = (index: number) => {
 }
 
 .action-btn {
+  width: 50px;
+  height: 50px;
   padding: 0.5rem;
-  border-radius: 6px;
-  background: transparent;
+  border-radius: 50%;
+  font-size: 20px;
   border: none;
   cursor: pointer;
-  color: #6b7280;
+  color: #0e2c4b;
   transition: color 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .action-btn:hover {
-  color: #4b5563;
+  background-color: #0056b3;
+  color: white;
 }
 
 .send-button {
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  background: #6366f1;
-  color: white;
+  padding: 0.5rem;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  font-size: 22px;
+  background-color: #d5e1ec;
+  color: rgb(88, 88, 88);
   border: none;
   cursor: pointer;
   transition: opacity 0.2s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.send-button:hover {
+  background-color: #0056b3;
+  color: white;
 }
 
 .send-button:disabled {

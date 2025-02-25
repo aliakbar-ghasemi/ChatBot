@@ -1,6 +1,6 @@
 <template>
-  <div v-if="messages.length > 0" class="chat-container" ref="containerRef">
-    <div v-for="message in messages" :key="message.id" class="message-wrapper">
+  <div v-if="messages.length > 0" class="chat-container" ref="containerRef" @scroll="handleScroll">
+    <div v-for="(message, index) in messages" :key="message.id" class="message-wrapper" :ref="index === currentQuestionIndex ? 'currentQuestionRef' : ''">
       <div :class="['message', message.role]">
         <StreamingMessage
           :content="message.content"
@@ -21,20 +21,54 @@ const props = defineProps<{
   isStreaming: boolean
 }>()
 
-const containerRef = ref<HTMLElement>()
+const currentQuestionIndex = ref<number | null>(null); // Index of the current question
+const isAtTop = ref(false); // To track if the container is at the top
+
+// Refs
+const containerRef = ref<HTMLElement | null>(null); // Ref for the content container
+const currentQuestionRef = ref<HTMLElement | null>(null); // Ref for the current question
+
+// Handle the scroll event
+const handleScroll = () => {
+  const container = containerRef.value;
+  // Check if we're at the top
+  isAtTop.value = container.scrollTop === 0;
+};
+
 const lastMessageId = computed(() => {
   const lastMessage = props.messages[props.messages.length - 1]
   return lastMessage?.id
 })
 
-// Watch both the messages array and individual message content
-watch(
-  () => props.messages,
-  () => {
-    scrollToBottom()
-  },
-  { deep: true }
-)
+// Function to handle the new stream of data (new messages)
+const onMessagesReceived = () => {
+  const container = containerRef.value;
+
+  // If the new message is a question, set it as the current question
+  // (for now, we will assume that the role 'user' is a question)
+  if (props.messages[props.messages.length - 1].role === 'user') {
+    currentQuestionIndex.value = props.messages.length - 1;
+  }
+
+  // Scroll to the current question
+  if (currentQuestionIndex.value !== null) {
+    scrollToCurrentQuestion();
+  }
+};
+
+// Scroll to the current question
+const scrollToCurrentQuestion = () => {
+  const container = containerRef.value;
+  const currentQuestion = currentQuestionRef.value;
+
+  // Only scroll if the current question exists and we're not at the top
+  if (currentQuestion && !isAtTop.value) {
+    currentQuestion.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start', // Scroll to the top of the current question
+    });
+  }
+};
 
 const scrollToBottom = () => {
   nextTick(() => {
@@ -43,6 +77,26 @@ const scrollToBottom = () => {
     }
   })
 }
+
+watch(
+  () => props.messages,
+  (newMessages) => {
+    if(newMessages.length === 0) return;
+
+    if(!props.isStreaming){
+      scrollToBottom();
+      return;
+    }
+
+    // Check if the new message is a question and update the current question index
+    const lastMessage: Message = newMessages[newMessages.length - 1];
+    if (lastMessage['role'] === 'user') {
+      currentQuestionIndex.value = newMessages.length - 1;
+      scrollToCurrentQuestion();
+    }
+  },
+  { immediate: true, deep:true } // Make sure it checks on component mount as well
+);
 </script>
 
 <style scoped>

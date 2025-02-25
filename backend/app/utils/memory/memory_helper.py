@@ -5,6 +5,7 @@ import ollama
 import numpy as np
 import datetime
 from app.core.logger import logger
+from app.utils.text_helper_transformers_summary import summarize_text
 
 class MemoryHelper:
     def __init__(self):
@@ -18,11 +19,12 @@ class MemoryHelper:
         return np.array(response["embedding"], dtype=np.float32)
 
     # Store a message and add to FAISS
-    def store_and_index_message(self, conversation_id, sender, text):
+    async def store_and_index_message(self, conversation_id, sender, text, model = ""):
+        print(f"Storing message: {sender}")
         timestamp = datetime.datetime.now().isoformat()
         embedding = self.generate_embedding(text)
         self.db_helper.add_conversation(conversation_id, text[:30]) 
-        message_id = self.db_helper.add_message(conversation_id, text, sender, timestamp, embedding)
+        message_id = self.db_helper.add_message(conversation_id, text, sender, timestamp, embedding, model)
         self.faiss_helper.add_message_to_index(message_id, embedding)
 
     # Search for similar messages
@@ -54,3 +56,21 @@ class MemoryHelper:
     def get_all_conversations(self) -> List[Tuple[str, Optional[str]]]:
         """"Returns all conversation IDs with their titles."""
         return self.db_helper.get_all_conversations()
+    
+    def set_conversation_title(self, conversation_id, title):
+        """Set the title of a conversation."""
+        self.db_helper.set_conversation_title(conversation_id, title)
+        
+    async def generate_summary(self, conversation_id, prompt):
+        """Generate a summary for a conversation."""
+        print(f"Generating summary for conversation: {conversation_id}")
+        old_summary = self.db_helper.get_conversation_summary(conversation_id)
+        if not old_summary:
+            old_summary = ""
+        text = old_summary + "\n" + prompt
+        new_summary = summarize_text(text.strip())
+        self.db_helper.set_conversation_summary(conversation_id, new_summary)
+        
+    def get_conversation_summary(self, conversation_id):
+        """Retrieve a conversation's summary."""
+        return self.db_helper.get_conversation_summary(conversation_id)

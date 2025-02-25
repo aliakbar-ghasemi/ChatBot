@@ -42,6 +42,7 @@ export const useChatStore = defineStore("chat", {
           content: content,
           role: "user",
           timestamp: new Date(),
+          model: ""
         });
 
         const response = await fetch("http://localhost:8072/api/v1/chat", {
@@ -63,6 +64,7 @@ export const useChatStore = defineStore("chat", {
           content: "",
           role: "assistant",
           timestamp: new Date(),
+          model: this.currentModel
         });
 
         for await (const chunk of streamService.streamResponse(response)) {
@@ -79,5 +81,18 @@ export const useChatStore = defineStore("chat", {
         this.messages[messageIndex].content += chunk;
       }
     },
+
+    async cancelMessage(conversationId: string) {
+      const response = await fetch(
+        `http://localhost:8072/api/v1/chat/cancel?conversation_id=${conversationId}`,
+        {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: null
+        }
+      );
+      console.log(response);
+      this.isStreaming = false;
+    }
   },
 });

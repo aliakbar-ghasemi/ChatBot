@@ -19,7 +19,9 @@ class DatabaseHelper:
                 CREATE TABLE IF NOT EXISTS conversations (
                     id TEXT PRIMARY KEY,
                     title TEXT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    modified_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    summary TEXT
                 )
             """
             )
@@ -33,6 +35,7 @@ class DatabaseHelper:
                     timestamp TEXT,
                     vector BLOB,  -- Stores embedding as bytes
                     shape TEXT,   -- Stores shape as JSON
+                    model TEXT,
                     FOREIGN KEY (conversation_id) REFERENCES conversations (id)
                 )
             """
@@ -40,7 +43,13 @@ class DatabaseHelper:
             conn.commit()
 
     def add_message(
-        self, conversation_id: str, message: str, role: str, timestamp: str, vector
+        self,
+        conversation_id: str,
+        message: str,
+        role: str,
+        timestamp: str,
+        vector,
+        model: str,
     ):
         """Insert a message into the database."""
         with sqlite3.connect(self.db_path) as conn:
@@ -51,10 +60,18 @@ class DatabaseHelper:
 
             cursor.execute(
                 """
-                INSERT INTO messages (conversation_id, message, role, timestamp, vector, shape)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO messages (conversation_id, message, role, timestamp, vector, shape, model)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-                (conversation_id, message, role, timestamp, vector_bytes, shape_json),
+                (
+                    conversation_id,
+                    message,
+                    role,
+                    timestamp,
+                    vector_bytes,
+                    shape_json,
+                    model,
+                ),
             )
 
             message_id = cursor.lastrowid  # Get inserted message ID
@@ -65,14 +82,12 @@ class DatabaseHelper:
         """Retrieve a message from the database."""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            cursor.execute(
-                "SELECT message FROM messages WHERE id = ?", (message_id,)
-            )
+            cursor.execute("SELECT message FROM messages WHERE id = ?", (message_id,))
             row = cursor.fetchone()
             if row:
                 return row[0]
             return None
-    
+
     def get_message_vector(self, message_id):
         """Retrieve stored embedding from SQLite."""
         with sqlite3.connect(self.db_path) as conn:
@@ -100,22 +115,23 @@ class DatabaseHelper:
 
             cursor.execute(
                 """
-                SELECT message, role, timestamp FROM messages WHERE conversation_id = ?
+                SELECT message, role, timestamp, model FROM messages WHERE conversation_id = ? ORDER BY timestamp ASC
             """,
                 (conversation_id,),
             )
             rows = cursor.fetchall()
             messages = []
-            #for message, role, timestamp, vector_bytes, shape_json in rows:
-            for message, role, timestamp in rows:
-                #shape = tuple(json.loads(shape_json))
-                #vector = np.frombuffer(vector_bytes, dtype=np.float32).reshape(shape)
+            # for message, role, timestamp, vector_bytes, shape_json in rows:
+            for message, role, timestamp, model in rows:
+                # shape = tuple(json.loads(shape_json))
+                # vector = np.frombuffer(vector_bytes, dtype=np.float32).reshape(shape)
                 message = {
                     "message": message,
                     "role": role,
                     "timestamp": timestamp,
-                    #"vector": vector.tolist(),
-                    #"shape": shape,
+                    "model": model,
+                    # "vector": vector.tolist(),
+                    # "shape": shape,
                 }
                 messages.append(message)
 
@@ -125,7 +141,9 @@ class DatabaseHelper:
         """Retrieve all conversation IDs with their titles."""
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT id, title FROM conversations")
+            cursor.execute(
+                "SELECT id, title, created_at, summary FROM conversations ORDER BY modified_at DESC"
+            )
             return cursor.fetchall()
 
     def add_conversation(self, conversation_id: str, title: str):
@@ -133,7 +151,11 @@ class DatabaseHelper:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT OR IGNORE INTO conversations (id, title) VALUES (?, ?)",
+                """
+                    INSERT INTO conversations (id, title, modified_at) 
+                    VALUES (?, ?, CURRENT_TIMESTAMP) 
+                    ON CONFLICT(id) DO UPDATE SET modified_at = CURRENT_TIMESTAMP
+                """,
                 (conversation_id, title),
             )
             conn.commit()
@@ -147,7 +169,7 @@ class DatabaseHelper:
                 (title, conversation_id),
             )
             conn.commit()
-            
+
     def delete_conversation(self, conversation_id: str):
         """Delete a conversation and its associated messages."""
         with sqlite3.connect(self.db_path) as conn:
@@ -155,8 +177,27 @@ class DatabaseHelper:
             cursor.execute(
                 "DELETE FROM messages WHERE conversation_id = ?", (conversation_id,)
             )
+            cursor.execute("DELETE FROM conversations WHERE id = ?", (conversation_id,))
+            conn.commit()
+
+    def get_conversation_summary(self, conversation_id: str):
+        """Retrieve a conversation's summary."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
             cursor.execute(
-                "DELETE FROM conversations WHERE id = ?", (conversation_id,)
+                "SELECT summary FROM conversations WHERE id = ?", (conversation_id,)
+            )
+            row = cursor.fetchone()
+            if row:
+                return row[0]
+            return ""
+
+    def set_conversation_summary(self, conversation_id: str, summary: str):
+        """Update a conversation's summary."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE conversations SET summary = ? WHERE id = ?",
+                (summary, conversation_id),
             )
             conn.commit()
-            

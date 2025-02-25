@@ -9,6 +9,7 @@ export function useConversation() {
   }
 
   const getConversationById = async (conversationId: string) => {
+    if (!conversationId.trim()) return
     await store.getConversationById(conversationId)
   }
 
